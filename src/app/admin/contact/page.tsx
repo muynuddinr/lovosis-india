@@ -6,6 +6,7 @@ interface Message {
   _id: string;
   name: string;
   email: string;
+  phone: string;
   subject: string;
   message: string;
   status: 'read' | 'unread';
@@ -96,9 +97,33 @@ export default function AdminContact() {
     filter === 'all' ? true : msg.status === filter
   );
 
+  // Add stats calculation
+  const stats = {
+    total: messages.length,
+    unread: messages.filter(msg => msg.status === 'unread').length,
+    read: messages.filter(msg => msg.status === 'read').length
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Contact Messages</h1>
+      
+      {/* Add Stats Section */}
+      <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-600">Total Messages</h3>
+          <p className="text-3xl font-bold text-gray-800 mt-2">{stats.total}</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-blue-600">Unread Messages</h3>
+          <p className="text-3xl font-bold text-blue-600 mt-2">{stats.unread}</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-600">Read Messages</h3>
+          <p className="text-3xl font-bold text-gray-600 mt-2">{stats.read}</p>
+        </div>
+      </div>
+
       <div className="bg-white rounded-xl shadow-lg p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-gray-700">Message List</h2>
@@ -120,40 +145,48 @@ export default function AdminContact() {
             {filteredMessages.map((message) => (
               <div key={message._id} className="border border-gray-100 rounded-lg p-6 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800">{message.name}</h3>
-                    <p className="text-gray-600 text-sm">{message.email}</p>
+                  <div className="grid grid-cols-2 gap-4 w-full">
+                    <div>
+                      <p className="text-gray-600"><span className="font-semibold">Name:</span> {message.name}</p>
+                      <p className="text-gray-600"><span className="font-semibold">Email:</span> {message.email}</p>
+                      <p className="text-gray-600"><span className="font-semibold">Phone:</span> {message.phone}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600"><span className="font-semibold">Subject:</span> {message.subject}</p>
+                      <p className="text-gray-600"><span className="font-semibold">Status:</span> 
+                        <span className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${
+                          message.status === 'unread' 
+                            ? 'text-blue-600 bg-blue-100' 
+                            : 'text-gray-600 bg-gray-100'
+                        }`}>
+                          {message.status}
+                        </span>
+                      </p>
+                      <p className="text-gray-600"><span className="font-semibold">Date:</span> {formatDate(message.createdAt)}</p>
+                    </div>
                   </div>
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                    message.status === 'unread' 
-                      ? 'text-blue-600 bg-blue-100' 
-                      : 'text-gray-600 bg-gray-100'
-                  }`}>
-                    {message.status === 'unread' ? 'New' : 'Read'}
-                  </span>
                 </div>
-                <h4 className="font-medium text-gray-700 mb-2">{message.subject}</h4>
-                <p className="text-gray-600 mb-4">{message.message}</p>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-500">
-                    Received: {formatDate(message.createdAt)}
-                  </span>
-                  <div className="flex space-x-4">
-                    {message.status === 'unread' && (
-                      <button 
-                        onClick={() => handleMarkAsRead(message._id)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        Mark as Read
-                      </button>
-                    )}
+                
+                <div className="mt-4">
+                  <p className="text-gray-600"><span className="font-semibold">Message:</span></p>
+                  <p className="text-gray-700 mt-2 bg-gray-50 p-3 rounded-lg">{message.message}</p>
+                </div>
+
+                <div className="flex justify-end space-x-4 mt-4">
+                  {message.status === 'unread' && (
                     <button 
-                      onClick={() => handleDeleteClick(message._id)}
-                      className="text-red-600 hover:text-red-800"
+                      onClick={() => handleMarkAsRead(message._id)}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
                     >
-                      Delete
+                      Mark as Read
                     </button>
-                  </div>
+                  )}
+                  <button 
+                    onClick={() => handleDeleteClick(message._id)}
+                    className="text-red-600 hover:text-red-800 font-medium"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}

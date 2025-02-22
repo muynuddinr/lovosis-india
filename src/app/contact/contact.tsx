@@ -8,6 +8,7 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     subject: '',
     message: ''
   });
@@ -29,7 +30,7 @@ export default function Contact() {
       if (!response.ok) throw new Error('Failed to send message');
 
       setSubmitStatus('success');
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch (error) {
       setSubmitStatus('error');
     }
@@ -102,6 +103,13 @@ export default function Contact() {
                   name="email"
                   type="email"
                   value={formData.email}
+                  onChange={handleChange}
+                />
+                <FormInput
+                  label="Phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
                   onChange={handleChange}
                 />
               </div>
